@@ -1,0 +1,9 @@
+required_score 5.0
+
+use_bayes 0
+
+bayes_auto_learn 0
+
+normalize_charset 1
+
+add_header all Report _REPORT_

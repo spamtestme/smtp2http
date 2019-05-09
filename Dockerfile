@@ -1,0 +1,44 @@
+FROM ubuntu:18.04 AS src
+
+ARG DEBIAN_FRONTEND='noninteractive'
+
+RUN apt-get update \
+    && apt-get install -y \
+        postfix \
+        spamassassin \
+        curl \
+        rsyslog \
+    &&  rm -rf /var/lib/apt/lists/*
+
+RUN curl -sSL https://git.io/get-mo -o /usr/local/bin/mo \
+    && chmod +x /usr/local/bin/mo
+
+COPY ./src /
+
+ENV MAIL_PATTERN='/^.*$/'
+ENV MYDOMAIN='localhost'
+ENV MYHOSTNAME='mail.localhost'
+ENV API_URL='http://localhost/mail'
+ENV MAIL_MAX_SIZE=256000000
+ENV MAIL_NAME='Mailr'
+ENV SMTPD_BANNER='$myhostname ESMTP $mail_name'
+
+EXPOSE 25
+
+CMD /run.sh
+
+FROM src AS dev
+
+RUN apt-get update \
+    && apt-get install -y \
+        iproute2 \
+        telnet \
+        nano \
+    &&  rm -rf /var/lib/apt/lists/*
+
+COPY ./dev /
+
+ENV API_URL='http://host.docker.internal:8080/mail'
+ENV MAIL_FROM='myself@example.com'
+ENV MAIL_TO='receiver@localhost'
+
