@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 AS src
+FROM ubuntu:18.04 AS main
 
 ARG DEBIAN_FRONTEND='noninteractive'
 
@@ -13,7 +13,7 @@ RUN apt-get update \
 RUN curl -sSL https://git.io/get-mo -o /usr/local/bin/mo \
     && chmod +x /usr/local/bin/mo
 
-COPY ./src /
+COPY ./src/main /
 
 ENV MAIL_PATTERN='/^.*$/'
 ENV MYDOMAIN='localhost'
@@ -27,7 +27,7 @@ EXPOSE 25
 
 CMD /run.sh
 
-FROM src AS dev
+FROM main AS test
 
 RUN apt-get update \
     && apt-get install -y \
@@ -36,7 +36,7 @@ RUN apt-get update \
         nano \
     &&  rm -rf /var/lib/apt/lists/*
 
-COPY ./dev /
+COPY ./src/test /
 
 ENV API_URL='http://host.docker.internal:8080/mail'
 ENV MAIL_FROM='myself@example.com'

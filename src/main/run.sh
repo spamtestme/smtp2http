@@ -1,5 +1,5 @@
 #!/bin/bash
 
-. /init.sh
+. init.sh
 
 main
