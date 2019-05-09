@@ -26,3 +26,18 @@ ENV SMTPD_BANNER='$myhostname ESMTP $mail_name'
 EXPOSE 25
 
 CMD /run.sh
+
+FROM main AS test
+
+RUN apt-get update \
+    && apt-get install -y \
+        iproute2 \
+        telnet \
+        nano \
+    &&  rm -rf /var/lib/apt/lists/*
+
+COPY ./src/test /
+
+ENV API_URL='http://host.docker.internal:8080/mail'
+ENV MAIL_FROM='myself@example.com'
+ENV MAIL_TO='receiver@localhost'
